@@ -92,11 +92,23 @@ def point_to_node_partition(
     matching_masks[point_to_node, point_indices] = True  # (M, N)
     sq_dist_mat.masked_fill_(~matching_masks, 1e12)  # (M, N)
 
-    node_knn_indices = sq_dist_mat.topk(k=point_limit, dim=1, largest=False)[1]  # (M, K)
+    valid_point_limit = min(point_limit, points.shape[0])
+    if valid_point_limit <= 0:
+        raise ValueError('point_limit must be positive and not exceed the number of input points.')
+    node_knn_indices = sq_dist_mat.topk(k=valid_point_limit, dim=1, largest=False)[1]  # (M, K)
     node_knn_node_indices = index_select(point_to_node, node_knn_indices, dim=0)  # (M, K)
-    node_indices = torch.arange(nodes.shape[0]).cuda().unsqueeze(1).expand(-1, point_limit)  # (M, K)
+    node_indices = torch.arange(nodes.shape[0]).cuda().unsqueeze(1).expand(-1, valid_point_limit)  # (M, K)
     node_knn_masks = torch.eq(node_knn_node_indices, node_indices)  # (M, K)
     node_knn_indices.masked_fill_(~node_knn_masks, points.shape[0])
+
+    if valid_point_limit < point_limit:
+        pad_size = point_limit - valid_point_limit
+        pad_indices = torch.full(
+            (nodes.shape[0], pad_size), points.shape[0], dtype=node_knn_indices.dtype, device=node_knn_indices.device
+        )
+        pad_masks = torch.zeros((nodes.shape[0], pad_size), dtype=node_knn_masks.dtype, device=node_knn_masks.device)
+        node_knn_indices = torch.cat([node_knn_indices, pad_indices], dim=1)
+        node_knn_masks = torch.cat([node_knn_masks, pad_masks], dim=1)
 
     if return_count:
         unique_indices, unique_counts = torch.unique(point_to_node, return_counts=True)

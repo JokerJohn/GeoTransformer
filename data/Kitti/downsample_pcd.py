@@ -13,6 +13,7 @@ def main():
         for file_name in tqdm(file_names):
             frame = file_name.split('/')[-1][:-4]
             new_file_name = osp.join('downsampled', seq_id, frame + '.npy')
+            os.makedirs(osp.dirname(new_file_name), exist_ok=True)
             points = np.fromfile(file_name, dtype=np.float32).reshape(-1, 4)
             points = points[:, :3]
             pcd = o3d.geometry.PointCloud()

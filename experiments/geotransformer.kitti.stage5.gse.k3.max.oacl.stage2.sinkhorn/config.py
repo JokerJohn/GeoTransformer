@@ -29,8 +29,11 @@ ensure_dir(_C.event_dir)
 ensure_dir(_C.feature_dir)
 
 # data
+# export KITTI_DATASET_ROOT=/media/xchu/331b5361-390f-4b2c-ae0e-091c6c0cefad/home/xchu/data/kitti/data_odometry_velodyne/dataset
+
 _C.data = edict()
-_C.data.dataset_root = osp.join(_C.root_dir, 'data', 'Kitti')
+_default_kitti_root = osp.join(_C.root_dir, 'data', 'Kitti')
+_C.data.dataset_root = os.environ.get('KITTI_DATASET_ROOT', _default_kitti_root)
 
 # train data
 _C.train = edict()

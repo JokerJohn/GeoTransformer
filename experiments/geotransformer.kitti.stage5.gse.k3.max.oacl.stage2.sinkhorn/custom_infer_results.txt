@@ -1,0 +1,21 @@
+Custom inference results
+Target point cloud: /home/xchu/Downloads/ltloc-results/simulated_pc/shifted_cylinder/measured_cloud_shifted_cylinder.pcd
+Source point cloud: generated from target
+GT identity enforced: True
+
+Estimated transform (4x4, row-major):
+[[ 0.999398  0.034661 -0.001747 -0.226683]
+ [-0.034658  0.999398  0.001664 -0.788261]
+ [ 0.001804 -0.001602  0.999997 -0.497125]
+ [ 0.000000  0.000000  0.000000  1.000000]]
+
+Metrics:
+  RRE (deg): 1.991151
+  RTE (m): 0.959100
+  Registration Recall (<= 5.0 deg & <= 0.2 m): 0.000000
+  Chamfer Distance (m): 0.018732
+  RMSE (m, inliers <= 0.2 m): 0.009974
+  Fitness (inlier ratio): 1.000000
+  Inlier Count: 7562
+  Runtime (ms): 374.085
+
